@@ -1,0 +1,4 @@
+UserID:   admin1
+   Email:    admin1@mmucampus.app
+   Password: SuperSecret123
+   UID:      XHv0kZXwrqd1KWqwPNAOmyrGIDM2
