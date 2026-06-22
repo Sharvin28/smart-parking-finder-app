@@ -4,11 +4,11 @@
     "slug": "campus-smart-parking-finder-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/expo.icon/Assets/parking-icon.png",
     "scheme": "smartparkingmmu",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/expo.icon/Assets/parking-icon.png",
       "bundleIdentifier": "com.sharvin28.campussmartparkingfinderapp",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -21,7 +21,13 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.sharvin28.campussmartparkingfinderapp",
+      "config": {
+    "googleMaps": {
+      "apiKey": "AIzaSyAlkMrfBOYBIXnWKVtYqC7rTR_eNRi9sDk"
+    }
+  }
     },
     "web": {
       "output": "static",
