@@ -1,5 +1,3 @@
-// ✅ Just this single line
-import { cacheDirectory, writeAsStringAsync } from 'expo-file-system';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { ParkingRecord, ReportSummary } from '../hooks/useParkingReport';
@@ -38,10 +36,10 @@ export async function exportReportAsCSV(records: ParkingRecord[]): Promise<void>
   const csvContent = csvLines.join('\n');
 
   const fileName = `parking_report_${Date.now()}.csv`;
-  const fileUri = `${cacheDirectory}${fileName}`;
+  const fileUri = `${FileSystem.cacheDirectory}${fileName}`;
 
-  await writeAsStringAsync(fileUri, csvContent, {
-    encoding: 'utf8',
+  await FileSystem.writeAsStringAsync(fileUri, csvContent, {
+  encoding: 'utf8',
   });
 
   const canShare = await Sharing.isAvailableAsync();
