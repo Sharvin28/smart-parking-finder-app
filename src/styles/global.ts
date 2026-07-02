@@ -1,9 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { colors as themeColors, radii, spacing } from './theme';
+import { radii, spacing, colors as themeColors } from './theme';
 
-// Re-exported as `colors` so every existing screen (`colors.primary`,
-// `colors.background`, etc.) keeps working without changes — only the
-// values moved to the navy / teal palette in theme.ts.
 export const colors = themeColors;
 
 export const globalStyles = StyleSheet.create({
@@ -37,7 +34,6 @@ export const globalStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  // ── New shared primitives used across the restyled screens ──────────────
   card: {
     backgroundColor: colors.surface,
     borderRadius: radii.lg,

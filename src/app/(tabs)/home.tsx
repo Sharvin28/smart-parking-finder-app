@@ -19,7 +19,6 @@ import { auth, db } from '../../../firebase';
 
 export default function HomeScreen() {
 
-  // ── FIX 1: Redirect unauthenticated users immediately ────────────────────
   getAuth().onAuthStateChanged((user) => {
     if (!user) router.replace('/');
   });
@@ -28,8 +27,6 @@ export default function HomeScreen() {
   const [name, setName] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
-  // Live sensor feed total — drives the pulsing status banner, same data
-  // source ParkingGrid already subscribes to (RTDB /availableSlots).
   const { counts } = useAvailableSlots();
 
   useEffect(() => {
@@ -68,12 +65,27 @@ export default function HomeScreen() {
 
   const firstName = displayName.split(' ')[0];
   const rc = roleColors[role] ?? roleColors.Student;
-  const liveTotal =
-    role.toLowerCase() === 'admin' ? counts.total : counts[role.toLowerCase() as 'student' | 'staff' | 'visitor'] ?? 0;
+  // Map each role to which zone(s) count toward their "available" total.
+  // Mirrors the same visibility rules used in parking.tsx (getZonesForRole).
+  const getLiveTotalForRole = (): number => {
+    const normalizedRole = role.toLowerCase().trim();
+    switch (normalizedRole) {
+      case 'student':
+        return counts.Student + counts.Visitor;
+      case 'staff':
+        return counts.Staff + counts.Visitor;
+      case 'visitor':
+        return counts.Visitor;
+      case 'admin':
+        return counts.Total;
+      default:
+        return 0;
+    }
+  };
+  const liveTotal = getLiveTotalForRole();
 
   return (
     <ScrollView style={globalStyles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      {/* Header */}
       <View style={styles.headerRow}>
         <View>
           <Text style={styles.greeting}>Good day</Text>
@@ -88,7 +100,6 @@ export default function HomeScreen() {
 
       <HomeHeader />
 
-      {/* User details card */}
       <View style={styles.infoCard}>
         <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Name</Text>
@@ -108,7 +119,6 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* Live sensor status banner */}
       {!!role && (
         <View style={[styles.liveBanner, { backgroundColor: rc.bg, borderColor: rc.accent + '55' }]}>
           <View style={styles.pulseDot} />
@@ -118,15 +128,13 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {/* Realtime parking zones for this role */}
       <Text style={globalStyles.sectionTitle}>Available Parking</Text>
       <ParkingGrid role={role} />
 
-      {/* Quick links */}
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => router.push('/(tabs)/parking')}
+          onPress={() => router.push({ pathname: '/(tabs)/parking', params: { role } })}
         >
           <Text style={styles.actionText}>🅿️ View Parking</Text>
         </TouchableOpacity>

@@ -7,7 +7,6 @@ import { auth, db } from '../../firebase';
 
 export default function RootLayout() {
 
-  // ── FIX 1: onAuthStateChanged — auto-redirect when session changes ─────────
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -21,7 +20,7 @@ export default function RootLayout() {
           return;
         }
         const role = userDoc.data().role;
-        // Only redirect away from splash/login — don't interrupt active screens
+
         const currentRoute = router.canGoBack() ? null : 'root';
         if (role === 'Admin') {
           router.replace('/(tabs)/home'); // admin tab
@@ -36,9 +35,7 @@ export default function RootLayout() {
     return () => unsubscribe();
   }, []);
 
-  // ── FIX 3: Cold launch — notification tap deep-link ───────────────────────
   useEffect(() => {
-    // App was fully closed and user tapped notification
     const handleColdLaunch = async () => {
       const response = await Notifications.getLastNotificationResponseAsync();
       if (!response) return;
@@ -54,7 +51,6 @@ export default function RootLayout() {
     };
     handleColdLaunch();
 
-    // App was backgrounded and user tapped notification
     const sub = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         const data = response.notification.request.content.data as {

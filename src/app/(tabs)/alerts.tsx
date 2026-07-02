@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,10 +19,6 @@ import {
 } from 'react-native';
 import { auth, db } from '../../../firebase';
 
-// True when running inside Expo Go (vs a custom dev build / standalone app).
-// expo-notifications' remote push APIs throw immediately on Android in
-// Expo Go (SDK 53+) — that throw was silently breaking this route's
-// registration in the tab navigator, making the whole tab disappear.
 const isExpoGo = Constants.appOwnership === 'expo';
 
 const QUICK_MUTE_OPTIONS = [
@@ -31,9 +28,6 @@ const QUICK_MUTE_OPTIONS = [
   { label: '8 hr',    minutes: 480 },
 ];
 
-// Builds the next 14 days as { label, value } for the date wheel —
-// avoids pulling in a native date-picker dependency; everything here
-// runs on @react-native-picker/picker, already in package.json.
 function buildDateOptions(): { label: string; value: string }[] {
   const opts: { label: string; value: string }[] = [];
   for (let i = 0; i < 14; i++) {
@@ -60,11 +54,10 @@ export default function Notify() {
   const [saving, setSaving]         = useState(false);
   const [mutedUntil, setMutedUntil] = useState<Date | null>(null);
 
-  // ── Custom date & time filter state (wheel pickers) ────────────────────
   const [pickerMode, setPickerMode] = useState<'quick' | 'custom'>('quick');
   const dateOptions = useMemo(buildDateOptions, []);
 
-  const defaultTarget = new Date(Date.now() + 60 * 60 * 1000); // +1 hr
+  const defaultTarget = new Date(Date.now() + 60 * 60 * 1000);
   const [selDate, setSelDate] = useState(dateOptions[0].value);
   const [selHour, setSelHour] = useState(defaultTarget.getHours());
   const [selMinute, setSelMinute] = useState(
@@ -100,7 +93,6 @@ export default function Notify() {
         }
       }
 
-      // Mute setting fetch is plain Firestore — safe in Expo Go either way
       try {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists() && userDoc.data().mutedUntil) {
@@ -116,8 +108,6 @@ export default function Notify() {
     return () => unsubscribe();
   }, []);
 
-  // minutes === 0 unmutes. minutes === -1 means "use customDate" (custom
-  // date-time filter) instead of a relative offset.
   const applyMute = async (minutes: number) => {
     const user = auth.currentUser;
     if (!user) return;
@@ -206,7 +196,6 @@ export default function Notify() {
 
       <Text style={globalStyles.sectionTitle}>Pause notifications</Text>
 
-      {/* Mode toggle: Quick presets vs custom Date & Time */}
       <View style={styles.modeRow}>
         <TouchableOpacity
           style={[styles.modeTab, pickerMode === 'quick' && styles.modeTabActive]}
@@ -244,7 +233,6 @@ export default function Notify() {
         <View style={styles.customCard}>
           <Text style={styles.fieldLabel}>Pause until</Text>
 
-          {/* Three wheel pickers: Date / Hour / Minute */}
           <View style={styles.pickerRow}>
             <View style={[styles.pickerWrap, { flex: 1.6 }]}>
               <Picker
@@ -309,7 +297,6 @@ export default function Notify() {
         </View>
       )}
 
-      {/* Unmute */}
       {isMuted && (
         <TouchableOpacity
           style={styles.unmuteButton}
@@ -444,12 +431,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
-    overflow: 'hidden',
     justifyContent: 'center',
+    height: Platform.select({ ios: 120, android: 50 }),
+    overflow: Platform.select({
+    ios: 'hidden',
+    android: 'visible',
+  }) as 'hidden' | 'visible',
   },
   picker: {
     color: colors.text,
     width: '100%',
+    height: Platform.select({ ios: 120, android: 50 }),
   },
   pickerItemIOS: {
     color: colors.text,

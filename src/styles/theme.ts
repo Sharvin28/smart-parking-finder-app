@@ -1,33 +1,24 @@
-// Central design tokens for the Smart Parking MMU app.
-// Mirrors the navy / electric-teal visual language from the approved UI mockup.
-// Import `colors` for backward compatibility with existing screens, or the
-// richer `theme` object for the new tokens (radii, spacing, typography).
-
 export const colors = {
   // Backgrounds
-  background: '#0D1B2A', // deep navy (was #1a1a2e)
-  header: '#162436',     // navyMid
-  surface: '#1A2E42',    // card
-  surfaceAlt: '#1E3448', // navyLt — inputs, chips
+  background: '#1a1a2e',
+  header: '#162436',     
+  surface: '#1A2E42',    
+  surfaceAlt: '#1E3448',
   border: 'rgba(255,255,255,0.08)',
-
   // Brand
-  primary: '#00C9A7',    // electric teal (was #4fc3f7)
-  primaryDark: '#00A88B',
-  primaryTint: 'rgba(0,201,167,0.13)',
-
+  primary: '#fdfdfd',
+  primaryDark: '#5f2f2f',
+  primaryTint: 'rgba(0, 255, 213, 0.13)',
   // Text
   text: '#F5F7FA',
   textSecondary: '#8A96A3',
-
   // Status
-  alert: '#FC5C5C',      // red
-  warning: '#F6AD55',    // amber
-  success: '#00C9A7',    // reuse teal for "available" to match mockup
-  successAlt: '#48BB78', // alt green where red/teal/green trio is needed
+  alert: '#FC5C5C',      
+  warning: '#F6AD55',   
+  success: '#00C9A7',    
+  successAlt: '#48BB78', 
 };
 
-// Role accent colors — used for badges and the live-status banner on Home
 export const roleColors: Record<
   string,
   { bg: string; accent: string; label: string }

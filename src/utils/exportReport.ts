@@ -15,8 +15,6 @@ function durationLabel(record: ParkingRecord): string {
   return `${mins} min`;
 }
 
-// Escapes a value for safe inclusion in a CSV cell (wraps in quotes if it
-// contains a comma, quote, or newline; doubles any internal quotes).
 function csvCell(value: string): string {
   if (/[",\n]/.test(value)) {
     return `"${value.replace(/"/g, '""')}"`;

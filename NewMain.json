@@ -1,0 +1,58 @@
+{
+  "parking": {
+    "Student": {
+      "slot1": {
+        "number":    "1",
+        "sensorId":  "IR1",
+        "occupied":  false,
+        "latitude":  2.928150,
+        "longitude": 101.640512
+      },
+      "slot2": {
+        "number":    "2",
+        "sensorId":  "IR2",
+        "occupied":  false,
+        "latitude":  2.928200,
+        "longitude": 101.640560
+      }
+    },
+    "Staff": {
+      "slot1": {
+        "number":    "1",
+        "sensorId":  "IR3",
+        "occupied":  false,
+        "latitude":  2.928350,
+        "longitude": 101.640700
+      },
+      "slot2": {
+        "number":    "2",
+        "sensorId":  "IR4",
+        "occupied":  false,
+        "latitude":  2.928400,
+        "longitude": 101.640750
+      }
+    },
+    "Visitor": {
+      "slot1": {
+        "number":    "1",
+        "sensorId":  "IR5",
+        "occupied":  false,
+        "latitude":  2.928500,
+        "longitude": 101.640850
+      },
+      "slot2": {
+        "number":    "2",
+        "sensorId":  "IR6",
+        "occupied":  false,
+        "latitude":  2.928550,
+        "longitude": 101.640900
+      }
+    }
+  },
+  "availableSlots": {
+    "student": 2,
+    "staff":   2,
+    "visitor": 2,
+    "total":   6
+  }
+}

@@ -1,6 +1,6 @@
-import { colors, spacing } from '@/styles/theme';
 import { getZonesForRole } from '@/config/parkingZones';
 import { useAvailableSlots } from '@/hooks/useParkingData';
+import { colors, spacing } from '@/styles/theme';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import ParkingCard from './ParkingCard';
 
@@ -9,9 +9,7 @@ type ParkingGridProps = {
 };
 
 export default function ParkingGrid({ role }: ParkingGridProps) {
-  // Live data straight from the ESP32 via Realtime Database —
-  // NOT Firestore. The ESP32 firmware writes to /availableSlots,
-  // it never touches a Firestore 'parkingZones' collection.
+
   const { counts, loading, error } = useAvailableSlots();
 
   if (loading) {
@@ -40,15 +38,20 @@ export default function ParkingGrid({ role }: ParkingGridProps) {
 
   return (
     <View style={styles.grid}>
-      {zones.map((zone) => (
-        <ParkingCard
-          key={zone.key}
-          label={zone.zoneName}
-          available={counts[zone.key]}
-          total={zone.totalSlots}
-          color={zone.color}
-        />
-      ))}
+      {zones.map((zone) => {
+        // AvailableCounts keys are PascalCase (Student/Staff/Visitor) —
+        // zone.key is already in that exact casing, so use it directly.
+        const key = zone.key as keyof typeof counts;
+        return (
+          <ParkingCard
+            key={zone.key}
+            label={zone.zoneName}
+            available={counts?.[key] ?? 0}
+            total={zone.totalSlots}
+            color={zone.color}
+          />
+        );
+      })}
     </View>
   );
 }

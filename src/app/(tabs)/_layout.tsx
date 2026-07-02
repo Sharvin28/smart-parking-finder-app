@@ -8,10 +8,6 @@ import { ActivityIndicator, View } from 'react-native';
 import { auth, db } from '../../../firebase';
 
 export default function TabLayout() {
-  // Admin sees a different tab set (Zones / Report) instead of the
-  // regular user's (Parking / Navigate / Alerts). Resolved once per
-  // mount from the same users/{uid}.role field home.tsx already reads —
-  // no new Firestore schema, just reused here for tab visibility.
   const [role, setRole] = useState<string | null>(null);
   const [resolved, setResolved] = useState(false);
 
@@ -74,8 +70,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
-      {/* Regular user tabs — hidden from the tab bar for Admin */}
       <Tabs.Screen
         name="parking"
         options={{
@@ -107,7 +101,6 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Admin-only tabs — hidden from the tab bar for everyone else */}
       <Tabs.Screen
         name="zones"
         options={{

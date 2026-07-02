@@ -1,5 +1,5 @@
-import { colors, radii, spacing } from '@/styles/theme';
 import { ZoneKey } from '@/config/parkingZones';
+import { colors, radii, spacing } from '@/styles/theme';
 import { router, useLocalSearchParams } from 'expo-router';
 import { onValue, ref } from 'firebase/database';
 import {
@@ -25,18 +25,19 @@ import MapView, { Marker } from 'react-native-maps';
 import { auth, db, rtdb } from '../../../firebase';
 
 const CAMPUS_REGION = {
-  latitude: 3.139,
-  longitude: 101.6869,
-  latitudeDelta: 0.01,
-  longitudeDelta: 0.01,
+  latitude: 2.9276,
+  longitude: 101.6421,
+  latitudeDelta: 0.005,
+  longitudeDelta: 0.005,
 };
 
 export default function NavigationScreen() {
-  const { zoneKey, slotNumber, zoneName, latitude, longitude } =
+  const { zoneKey, slotNumber, zoneName, sensorId, latitude, longitude } =
     useLocalSearchParams<{
       zoneKey?: ZoneKey;
       slotNumber?: string;
       zoneName?: string;
+      sensorId?: string;
       latitude?: string;
       longitude?: string;
     }>();
@@ -50,16 +51,17 @@ export default function NavigationScreen() {
   const [checkedIn, setCheckedIn] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Live-listen to this slot's occupied status from Firebase
   useEffect(() => {
     if (!zoneKey || !slotNumber) return;
-    const slotPath = `/parking/${zoneKey}/slot${slotNumber}/occupied`;
-    const slotRef = ref(rtdb, slotPath);
+    const slotRef = ref(rtdb, `/parking/${zoneKey}/slot${slotNumber}/occupied`);
     const unsubscribe = onValue(slotRef, (snapshot) => {
       setOccupied(Boolean(snapshot.val()));
     });
     return () => unsubscribe();
   }, [zoneKey, slotNumber]);
 
+  // Check if user already has an active session for this slot
   useEffect(() => {
     if (!zoneKey || !slotNumber) return;
     const checkSession = async () => {
@@ -89,11 +91,12 @@ export default function NavigationScreen() {
       const slotId = `${zoneKey}-slot${slotNumber}`;
       const recordRef = doc(collection(db, 'parkingRecords'));
       await setDoc(recordRef, {
-        userId: user.uid,
+        userId:   user.uid,
         slotId,
-        zone: zoneName ?? zoneKey,
-        timeIn: serverTimestamp(),
-        timeOut: null,
+        zone:     zoneName ?? zoneKey,
+        sensorId: sensorId ?? '',
+        timeIn:   serverTimestamp(),
+        timeOut:  null,
       });
       setActiveRecordId(recordRef.id);
       setCheckedIn(true);
@@ -133,68 +136,67 @@ export default function NavigationScreen() {
     ]);
   };
 
-  const mapRegion = {
-    latitude: lat,
-    longitude: lng,
-    latitudeDelta: 0.003,
-    longitudeDelta: 0.003,
-  };
+  const markerColor = checkedIn
+    ? colors.primary
+    : occupied
+    ? colors.alert
+    : colors.successAlt;
+
+  const markerTitle       = hasSlot ? `Slot ${slotNumber}` : 'Campus';
+  const markerDescription = hasSlot
+    ? `${zoneName} · ${sensorId ?? ''} · ${lat.toFixed(6)}, ${lng.toFixed(6)}`
+    : 'Select a slot from the Parking tab';
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} initialRegion={hasSlot ? mapRegion : CAMPUS_REGION}>
-        {hasSlot ? (
-          <Marker
-            coordinate={{ latitude: lat, longitude: lng }}
-            title={`Slot ${slotNumber}`}
-            description={zoneName}
-            pinColor={occupied && !checkedIn ? colors.alert : checkedIn ? colors.primary : colors.successAlt}
-          />
-        ) : (
-          <Marker
-            coordinate={{
-              latitude: CAMPUS_REGION.latitude,
-              longitude: CAMPUS_REGION.longitude,
-            }}
-            title="Campus"
-            description="Select a slot from the Parking tab"
-          />
-        )}
+      <MapView
+        style={styles.map}
+        initialRegion={hasSlot ? { latitude: lat, longitude: lng, latitudeDelta: 0.003, longitudeDelta: 0.003 } : CAMPUS_REGION}
+      >
+        <Marker
+          coordinate={hasSlot ? { latitude: lat, longitude: lng } : { latitude: CAMPUS_REGION.latitude, longitude: CAMPUS_REGION.longitude }}
+          title={markerTitle}
+          description={markerDescription}
+          pinColor={markerColor}
+        />
       </MapView>
 
       <View style={styles.infoBar}>
         {hasSlot ? (
           <>
-            {/* Slot summary card, mirrors the mockup's slot info bar */}
+            {/* Slot info card */}
             <View style={styles.slotCard}>
-              <View>
+              <View style={{ flex: 1 }}>
                 <Text style={styles.slotNumber}>Slot {slotNumber}</Text>
                 <Text style={styles.zoneName}>{zoneName}</Text>
+                {/* Sensor ID + live coordinates from Firebase */}
+                {!!sensorId && (
+                  <Text style={styles.sensorLabel}>📡 {sensorId}</Text>
+                )}
+                <Text style={styles.coordLabel}>
+                  📍 {lat.toFixed(6)}, {lng.toFixed(6)}
+                </Text>
               </View>
-              <View
-                style={[
-                  styles.statusPill,
+              <View style={[
+                styles.statusPill,
+                {
+                  backgroundColor: checkedIn
+                    ? 'rgba(0,201,167,0.15)'
+                    : occupied
+                    ? 'rgba(252,92,92,0.15)'
+                    : 'rgba(72,187,120,0.15)',
+                },
+              ]}>
+                <Text style={[
+                  styles.statusPillText,
                   {
-                    backgroundColor: checkedIn
-                      ? 'rgba(0,201,167,0.15)'
+                    color: checkedIn
+                      ? colors.primary
                       : occupied
-                      ? 'rgba(252,92,92,0.15)'
-                      : 'rgba(72,187,120,0.15)',
+                      ? colors.alert
+                      : colors.successAlt,
                   },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.statusPillText,
-                    {
-                      color: checkedIn
-                        ? colors.primary
-                        : occupied
-                        ? colors.alert
-                        : colors.successAlt,
-                    },
-                  ]}
-                >
+                ]}>
                   {checkedIn ? 'Session Active' : occupied ? 'Occupied' : 'Available'}
                 </Text>
               </View>
@@ -212,13 +214,10 @@ export default function NavigationScreen() {
                 onPress={handleCheckOut}
                 disabled={actionLoading}
               >
-                {actionLoading ? (
-                  <ActivityIndicator color={colors.text} />
-                ) : (
-                  <Text style={styles.btnTextLight}>
-                    Check Out (Record Time Out)
-                  </Text>
-                )}
+                {actionLoading
+                  ? <ActivityIndicator color={colors.text} />
+                  : <Text style={styles.btnTextLight}>Check Out (Record Time Out)</Text>
+                }
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -226,13 +225,10 @@ export default function NavigationScreen() {
                 onPress={handleCheckIn}
                 disabled={actionLoading}
               >
-                {actionLoading ? (
-                  <ActivityIndicator color={colors.background} />
-                ) : (
-                  <Text style={styles.btnTextDark}>
-                    Check In (Record Time In)
-                  </Text>
-                )}
+                {actionLoading
+                  ? <ActivityIndicator color={colors.background} />
+                  : <Text style={styles.btnTextDark}>Check In (Record Time In)</Text>
+                }
               </TouchableOpacity>
             )}
           </>
@@ -273,25 +269,16 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.md,
   },
-  slotNumber: {
-    fontSize: 17,
-    fontWeight: '800',
-    color: colors.primary,
-  },
-  zoneName: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
+  slotNumber:  { fontSize: 17, fontWeight: '800', color: colors.primary },
+  zoneName:    { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
+  sensorLabel: { fontSize: 11, color: colors.textSecondary, marginTop: 4 },
+  coordLabel:  { fontSize: 10, color: colors.textSecondary, marginTop: 2, fontStyle: 'italic' },
   statusPill: {
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: radii.pill,
   },
-  statusPillText: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
+  statusPillText: { fontSize: 11, fontWeight: '700' },
   warningLabel: {
     textAlign: 'center',
     color: colors.alert,
@@ -300,7 +287,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   checkInBtn: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.success,
     padding: 14,
     borderRadius: radii.md,
     alignItems: 'center',
@@ -313,22 +300,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  btnTextDark: {
-    color: colors.background,
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  btnTextLight: {
-    color: colors.text,
-    fontWeight: '700',
-    fontSize: 15,
-  },
+  btnTextDark:  { color: colors.background, fontWeight: '700', fontSize: 15 },
+  btnTextLight: { color: colors.text,       fontWeight: '700', fontSize: 15 },
   hint: {
     textAlign: 'center',
     color: colors.textSecondary,
     fontSize: 14,
     marginBottom: spacing.md,
   },
-  homeLink: { padding: spacing.md, alignItems: 'center' },
+  homeLink:     { padding: spacing.md, alignItems: 'center' },
   homeLinkText: { color: colors.primary, fontWeight: '700' },
 });

@@ -1,7 +1,7 @@
-import { globalStyles } from '@/styles/global';
-import { colors, radii, spacing } from '@/styles/theme';
 import { PARKING_ZONES } from '@/config/parkingZones';
 import { useAvailableSlots } from '@/hooks/useParkingData';
+import { globalStyles } from '@/styles/global';
+import { colors, radii, spacing } from '@/styles/theme';
 import { router } from 'expo-router';
 import {
   ActivityIndicator,
@@ -12,12 +12,8 @@ import {
   View,
 } from 'react-native';
 
-// Admin-only screen: shows every configured zone regardless of role
-// restrictions (PARKING_ZONES directly, not getZonesForRole — Admin
-// has no entry in allowedRoles by design, so it must bypass that filter).
 export default function AdminZonesScreen() {
-  // useAvailableSlots subscribes via onValue — already live/realtime,
-  // no manual refetch needed (RTDB pushes updates automatically).
+
   const { counts, loading, error } = useAvailableSlots();
 
   if (loading) {

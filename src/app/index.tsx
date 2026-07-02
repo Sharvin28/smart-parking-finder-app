@@ -71,7 +71,7 @@ export default function LoginScreen() {
         {/* Brand mark */}
         <View style={styles.brandRow}>
           <View style={styles.brandIcon}>
-            <Text style={{ fontSize: 16 }}>🅿️</Text>
+            <Text style={{ fontSize: 20 }}>🅿️</Text>
           </View>
           <Text style={styles.brandLabel}>CAMPUS SMART PARKING FINDER APP</Text>
         </View>
@@ -138,23 +138,23 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   brandIcon: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     borderRadius: 9,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primaryDark,
     alignItems: 'center',
     justifyContent: 'center',
   },
   brandLabel: {
     color: colors.primary,
-    fontSize: 12,
+    fontSize: 25,
     fontWeight: '700',
     letterSpacing: 1.2,
   },
   subtitle: {
     fontSize: 14,
     color: colors.textSecondary,
-    marginTop: 160,
+    marginTop: 65,
     marginBottom: 30,
   },
   fieldLabel: {

@@ -1,15 +1,16 @@
 {
   "expo": {
-    "name": "Smart-Parking-MMU",
+    "name": "MMU Smart Parking Finder App",
     "slug": "campus-smart-parking-finder-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/expo.icon/Assets/parking-icon.png",
+    "icon": "./assets/images/app-icon.png",
     "scheme": "smartparkingmmu",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon/Assets/parking-icon.png",
+      "icon": "./assets/images/app-icon.png",
       "bundleIdentifier": "com.sharvin28.campussmartparkingfinderapp",
+      "googleServicesFile": "./google-services.json",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -17,12 +18,11 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/app-icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.sharvin28.campussmartparkingfinderapp",
+      "googleServicesFile": "./google-services.json",
       "config": {
     "googleMaps": {
       "apiKey": "AIzaSyAlkMrfBOYBIXnWKVtYqC7rTR_eNRi9sDk"
@@ -31,7 +31,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/app-icon.png"
     },
     "plugins": [
       "expo-router",
@@ -41,7 +41,7 @@
         {
           "backgroundColor": "#208AEF",
           "android": {
-            "image": "./assets/images/splash-icon.png",
+            "image": "./assets/images/app-icon.png",
             "imageWidth": 76
           }
         }

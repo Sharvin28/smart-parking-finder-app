@@ -1,0 +1,56 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "parking": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+
+      "Student": {
+        "$slot": {
+          "number":    { ".validate": "newData.isString()" },
+          "sensorId":  { ".validate": "newData.isString()" },
+          "occupied":  { ".validate": "newData.isBoolean()" },
+          "latitude":  { ".validate": "newData.isNumber()" },
+          "longitude": { ".validate": "newData.isNumber()" }
+        }
+      },
+      "Staff": {
+        "$slot": {
+          "number":    { ".validate": "newData.isString()" },
+          "sensorId":  { ".validate": "newData.isString()" },
+          "occupied":  { ".validate": "newData.isBoolean()" },
+          "latitude":  { ".validate": "newData.isNumber()" },
+          "longitude": { ".validate": "newData.isNumber()" }
+        }
+      },
+      "Visitor": {
+        "$slot": {
+          "number":    { ".validate": "newData.isString()" },
+          "sensorId":  { ".validate": "newData.isString()" },
+          "occupied":  { ".validate": "newData.isBoolean()" },
+          "latitude":  { ".validate": "newData.isNumber()" },
+          "longitude": { ".validate": "newData.isNumber()" }
+        }
+      }
+    },
+
+    "availableSlots": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "student": { ".validate": "newData.isNumber()" },
+      "staff":   { ".validate": "newData.isNumber()" },
+      "visitor": { ".validate": "newData.isNumber()" },
+      "total":   { ".validate": "newData.isNumber()" }
+    },
+
+    "logs": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$logId": {
+        ".validate": "newData.hasChildren(['zone', 'slot', 'status', 'timestamp'])"
+      }
+    }
+  }
+}

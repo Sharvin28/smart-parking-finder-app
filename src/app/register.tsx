@@ -22,8 +22,8 @@ import { auth, db } from '../../firebase';
 const toAuthEmail = (userId: string) =>
   `${userId.trim().toLowerCase()}@mmucampus.app`;
 
-type Role = 'Student' | 'Staff' | 'Visitor';
-const ROLES: Role[] = ['Student', 'Staff', 'Visitor'];
+type Role = 'student' | 'staff' | 'visitor';
+const ROLES: Role[] = ['student', 'staff', 'visitor'];
 
 export default function Register() {
   const [userId, setUserId] = useState('');
