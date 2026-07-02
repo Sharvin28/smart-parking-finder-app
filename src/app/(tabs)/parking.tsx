@@ -170,7 +170,7 @@ export default function ParkingScreen() {
         <View style={styles.fullBanner}>
           <Text style={styles.fullBannerTitle}>All slots are full</Text>
           <Text style={styles.fullBannerSubtitle}>
-            You'll be notified when a slot opens
+            You&apos;ll be notified when a slot opens
           </Text>
         </View>
       )}
